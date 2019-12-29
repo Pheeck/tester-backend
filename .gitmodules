@@ -1,0 +1,3 @@
+[submodule "tester/frontend/tester-frontend"]
+	path = tester/frontend/tester-frontend
+	url = https://github.com/Pheeck/tester-frontend
