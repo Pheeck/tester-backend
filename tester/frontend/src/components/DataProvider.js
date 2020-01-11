@@ -10,14 +10,14 @@ class DataProvider extends Component {
   state = {
       data: [],
       loaded: false,
-      placeholder: "Loading..."
+      placeholder: "Fetching..."
     };
 
   componentDidMount() {
     fetch(this.props.endpoint)
       .then(response => {
         if (response.status !== 200) {
-          return this.setState({ placeholder: "Something went wrong" });
+          return this.setState({ placeholder: "Error" });
         }
         return response.json();
       })
