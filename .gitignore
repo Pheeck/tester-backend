@@ -1,3 +1,11 @@
+*.log
+*.log
+*.pot
 *.pyc
-*.exe
-.env/*
+__pycache__
+*db.sqlite3
+.env/
+node_modules/
+build/
+package-lock.json
+todo.txt
