@@ -19,7 +19,7 @@
     "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "dev": "webpack --mode development ./tester/frontend/src/index.js --output ./tester/frontend/static/frontend/main.js",
+    "dev": "webpack --mode development --output ./tester/frontend/static/frontend/main.js",
     "build": "webpack --mode production ./tester/frontend/src/index.js --output ./tester/frontend/static/frontend/main.js"
   }
 }

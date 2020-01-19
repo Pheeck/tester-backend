@@ -1,4 +1,8 @@
 module.exports = {
+  entry: {
+    index: "./tester/frontend/src/index.js",
+    table: "./tester/frontend/src/table.js"
+  },
   module: {
     rules: [
       {
@@ -8,6 +12,6 @@ module.exports = {
           loader: "babel-loader"
         }
       }
-    ]
+    ],
   }
 };
