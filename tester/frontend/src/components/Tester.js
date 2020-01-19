@@ -72,23 +72,6 @@ function Tester({ data }) {
             </Button>
           </Grid>
 
-          <Grid item xs={6}>
-            <table className="table is-striped">
-              <thead>
-                <tr>
-                  {Object.entries(data[0]).map(el => <th key={key(el)}>{el[0]}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map(el => (
-                  <tr key={el.id}>
-                    {Object.entries(el).map(el => <td key={key(el)}>{el[1]}</td>)}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Grid>
-
           <Grid item xs={12}>
             <ExpansionPanel
               expanded={panelExpanded}
