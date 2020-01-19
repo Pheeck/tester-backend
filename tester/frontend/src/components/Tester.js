@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Tester(data) {
+function Tester({ data }) {
   const styles = useStyles();
 
   const [buttonsDisabled, setButtonsDisabled] = useState(true);
@@ -44,7 +44,7 @@ function Tester(data) {
       <Paper className={styles.root}>
         <Grid container spacing={3}>
           <Grid item xs={6}>
-            <Typography variant='body1'>32 zbývá</Typography>
+            <Typography variant='body1'>32 zbývá ({qIndex})</Typography>
           </Grid>
           <Grid item xs={6}>
             <Typography variant='body1'>z toho tato otázka 3x</Typography>
@@ -72,6 +72,23 @@ function Tester(data) {
             </Button>
           </Grid>
 
+          <Grid item xs={6}>
+            <table className="table is-striped">
+              <thead>
+                <tr>
+                  {Object.entries(data[0]).map(el => <th key={key(el)}>{el[0]}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {data.map(el => (
+                  <tr key={el.id}>
+                    {Object.entries(el).map(el => <td key={key(el)}>{el[1]}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Grid>
+
           <Grid item xs={12}>
             <ExpansionPanel
               expanded={panelExpanded}
@@ -82,12 +99,12 @@ function Tester(data) {
             >
               <ExpansionPanelSummary>
                 <Typography variant='body1'>
-                  {typeof data[qIndex] == 'undefined' ? '' : data[qIndex].question}
+                  {data[qIndex] === undefined ? 'no data' : data[qIndex].question}
                 </Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <Typography variant='body1'>
-                  {typeof data[qIndex] == 'undefined' ? '' : data[qIndex].answer}
+                  {data[qIndex] === undefined ? 'no data' : data[qIndex].answer}
                 </Typography>
               </ExpansionPanelDetails>
             </ExpansionPanel>

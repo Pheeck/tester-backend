@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 function App() {
   return (
     <>
-      <DataProvider endpoint="api/testobjects/" render={data => <Table data={data} />} />
+      <DataProvider endpoint="api/questions/" render={data => <Table data={data} />} />
       <DataProvider endpoint="api/questions/" render={data => <Tester data={data} />} />
       <Button>Ahoj</Button>
     </>
