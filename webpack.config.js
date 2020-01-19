@@ -1,7 +1,11 @@
+var path = require("path")
+
 module.exports = {
   entry: {
-    index: "./tester/frontend/src/index.js",
-    table: "./tester/frontend/src/table.js"
+    index: "./tester/frontend/src/index.js"
+  },
+  output: {
+    path: path.resolve("./tester/frontend/static/frontend/")
   },
   module: {
     rules: [
