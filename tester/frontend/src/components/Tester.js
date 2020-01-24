@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-//import './App.css';
 
 import {
   Button,
@@ -13,7 +12,8 @@ import {
   makeStyles,
 } from '@material-ui/core';
 
-//import 'typeface-roboto';
+import DataProvider from "./DataProvider";
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,9 +21,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Tester({ data }) {
-  const styles = useStyles();
-
+function TestingComp({ data }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [qIndex, setQIndex] = useState(0);
@@ -40,61 +38,94 @@ function Tester({ data }) {
   }
 
   return (
-    <Container maxWidth='xs'>
-      <Paper className={styles.root}>
-        <Grid container spacing={3}>
-          <Grid item xs={6}>
-            <Typography variant='body1'>32 zbývá ({qIndex})</Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant='body1'>z toho tato otázka 3x</Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
+    <>
+      <Grid container spacing={3}>
+        <Grid item xs={6}>
+          <Typography variant='body1'>32 zbývá ({qIndex})</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant='body1'>z toho tato otázka 3x</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Button
+            variant='contained'
+            color='primary'
+            fullWidth
+            disabled={buttonsDisabled}
+            onClick={nextQuestion}
+          >
+            Vím
+          </Button>
+        </Grid>
+        <Grid item xs={6}>
+          <Button
+            variant='contained'
+            color='secondary'
+            fullWidth
+            disabled={buttonsDisabled}
+            onClick={nextQuestion}
+          >
+            Nevím
+          </Button>
+        </Grid>
+
+        <Grid item xs={12}>
+          <ExpansionPanel
+            expanded={panelExpanded}
+            onChange={toggleExpanded}
+            TransitionProps={{
+              'timeout': {'exit': 0},
+            }}
+          >
+            <ExpansionPanelSummary>
+              <Typography variant='body1'>
+                {data[qIndex] === undefined ? 'no data' : data[qIndex].question}
+              </Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Typography variant='body1'>
+                {data[qIndex] === undefined ? 'no data' : data[qIndex].answer}
+              </Typography>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+        </Grid>
+      </Grid>
+    </>
+  );
+}
+
+function StartComp({ data }) {
+  const [testStarted, setTestStarted] = useState(false);
+
+  return (
+    <>
+      {
+        testStarted
+          ? <TestingComp data={data}/>
+          : <Button
               variant='contained'
               color='primary'
               fullWidth
-              disabled={buttonsDisabled}
-              onClick={nextQuestion}
+              onClick={() => setTestStarted(true)}
             >
-              Vím
+              Start test
             </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant='contained'
-              color='secondary'
-              fullWidth
-              disabled={buttonsDisabled}
-              onClick={nextQuestion}
-            >
-              Nevím
-            </Button>
-          </Grid>
+      }
+    </>
+  );
+}
 
-          <Grid item xs={12}>
-            <ExpansionPanel
-              expanded={panelExpanded}
-              onChange={toggleExpanded}
-              TransitionProps={{
-                'timeout': {'exit': 0},
-              }}
-            >
-              <ExpansionPanelSummary>
-                <Typography variant='body1'>
-                  {data[qIndex] === undefined ? 'no data' : data[qIndex].question}
-                </Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                <Typography variant='body1'>
-                  {data[qIndex] === undefined ? 'no data' : data[qIndex].answer}
-                </Typography>
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
-          </Grid>
-        </Grid>
-      </Paper>
-    </Container>
+function Tester() {
+  const styles = useStyles();
+
+  return (
+    <>
+      <Container maxWidth='xs'>
+        <Paper className={styles.root}>
+          <DataProvider endpoint="api/questions/" render={data => <StartComp data={data} />} />
+        </Paper>
+      </Container>
+    </>
   );
 }
 
