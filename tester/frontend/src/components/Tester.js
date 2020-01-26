@@ -21,6 +21,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+
 function TestingComp({ data }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(false);
@@ -94,8 +95,16 @@ function TestingComp({ data }) {
   );
 }
 
-function StartComp({ data }) {
+function StartComp({ data, priority }) {
   const [testStarted, setTestStarted] = useState(false);
+
+  function generateTest() {
+    test = [];
+
+    // Array s objekty {question, answer, priority}
+
+    return test;
+  }
 
   return (
     <>
