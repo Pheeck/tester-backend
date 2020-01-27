@@ -22,7 +22,31 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-function TestingComp({ test }) {
+function FinishComp({ setTestRunning }) {
+  return (
+    <>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <Typography variant='body1'>
+            Test dokončen
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Button
+            variant='contained'
+            color='primary'
+            fullWidth
+            onClick={() => setTestRunning(false)}
+          >
+            Opakovat
+          </Button>
+        </Grid>
+      </Grid>
+    </>
+  );
+}
+
+function TestingComp({ test, setTestRunning }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [qIndex, setQIndex] = useState(0);
@@ -66,9 +90,7 @@ function TestingComp({ test }) {
     <>
       {
         testDone
-        ? <Typography variant='body1'>
-            Test dokončen
-          </Typography>
+        ? <FinishComp setTestRunning={setTestRunning} />
         : <Grid container spacing={3}>
             <Grid item xs={6}>
               <Typography variant='body1'>32 zbývá ({qIndex})</Typography>
@@ -127,7 +149,7 @@ function TestingComp({ test }) {
 
 function StartComp({ data, priority }) {
   const [test, setTest] = useState([]);
-  const [testStarted, setTestStarted] = useState(false);
+  const [testRunning, setTestRunning] = useState(false);
 
   function generateTest() {
     var result = [];
@@ -145,14 +167,14 @@ function StartComp({ data, priority }) {
 
   function startTest() {
     generateTest();
-    setTestStarted(true);
+    setTestRunning(true);
   }
 
   return (
     <>
       {
-        testStarted
-          ? <TestingComp test={test}/>
+        testRunning
+          ? <TestingComp test={test} setTestRunning={setTestRunning}/>
           : <Button
               variant='contained'
               color='primary'
