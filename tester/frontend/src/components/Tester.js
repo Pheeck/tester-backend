@@ -3,12 +3,16 @@ import React, {useState} from 'react';
 import {
   Button,
   Container,
+  Checkbox,
   ExpansionPanel,
   ExpansionPanelSummary,
   ExpansionPanelDetails,
+  FormControl,
+  FormControlLabel,
   Grid,
   Paper,
   Typography,
+  TextField,
   makeStyles,
 } from '@material-ui/core';
 
@@ -175,14 +179,31 @@ function StartComp({ data, priority }) {
       {
         testRunning
           ? <TestingComp test={test} setTestRunning={setTestRunning}/>
-          : <Button
-              variant='contained'
-              color='primary'
-              fullWidth
-              onClick={startTest}
-            >
-              Spustit test
-            </Button>
+          : <Grid container spacing={3}>
+              <Grid item xs={6}>
+                X slovíčkový mód
+              </Grid>
+              <Grid items xs={6}>
+                <TextField
+                  id="standard-number"
+                  label="Opakovat otázky"
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  fullWidth
+                  onClick={startTest}
+                >
+                  Spustit test
+                </Button>
+              </Grid>
+            </Grid>
       }
     </>
   );
