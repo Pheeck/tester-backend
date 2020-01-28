@@ -7,7 +7,6 @@ import {
   ExpansionPanel,
   ExpansionPanelSummary,
   ExpansionPanelDetails,
-  FormControl,
   FormControlLabel,
   Grid,
   Paper,
@@ -151,18 +150,21 @@ function TestingComp({ test, setTestRunning }) {
   );
 }
 
-function StartComp({ data, priority }) {
+function StartComp({ data }) {
   const [test, setTest] = useState([]);
   const [testRunning, setTestRunning] = useState(false);
+
+  const [qPriority, setQPriority] = useState(2);
+  const [inversedMode, setInversedMode] = useState(false);
 
   function generateTest() {
     var result = [];
 
     data.forEach((question) => {
       result.push({
-        question: question.question,
-        answer: question.answer,
-        priority: priority
+        question: inversedMode ? question.answer : question.question,
+        answer: inversedMode ? question.question : question.answer,
+        priority: qPriority
       });
     });
 
@@ -180,17 +182,24 @@ function StartComp({ data, priority }) {
         testRunning
           ? <TestingComp test={test} setTestRunning={setTestRunning}/>
           : <Grid container spacing={3}>
-              <Grid item xs={6}>
-                X slovíčkový mód
+              <Grid item xs={7}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={inversedMode}
+                      onChange={(event) => setInversedMode(event.target.checked)}
+                    />
+                  }
+                  label="Převrátit otázky"
+                />
               </Grid>
-              <Grid items xs={6}>
+              <Grid item xs={5}>
                 <TextField
                   id="standard-number"
                   label="Opakovat otázky"
                   type="number"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                  value={qPriority}
+                  onChange={(event) => setQPriority(event.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -216,7 +225,7 @@ function Tester() {
     <>
       <Container maxWidth='xs'>
         <Paper className={styles.root}>
-          <DataProvider endpoint="api/questions/" render={data => <StartComp data={data} priority={2} />} />
+          <DataProvider endpoint="api/questions/" render={data => <StartComp data={data} />} />
         </Paper>
       </Container>
     </>
