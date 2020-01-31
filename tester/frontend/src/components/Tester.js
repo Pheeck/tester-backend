@@ -164,14 +164,20 @@ function StartComp({ data }) {
   const maxPriority = 9;
 
   function handlePriorityChange(event) {
-    function isValidPriority(priority) {
-      // Test if priority is a number, is within defined limits and is an integer
-      return Number(priority) === priority && minPriority <= priority <= maxPriority && priority % 1 === 0;
+    // Test if new priority is a number, is within defined limits and is an integer
+    var newPriority = event.target.value;
+    if (isNaN(newPriority)) {
+      return;
     }
-    var newPriority = event.taget.value;
-    if (isValidPriority(newPriority)) {
-      setQPriority(newPriority);
+    newPriority = Number(newPriority);
+    if (newPriority < minPriority || newPriority > maxPriority) {
+      return;
     }
+    if (newPriority % 1 !== 0) {
+      return;
+    }
+    // If everything in order, set question priority
+    setQPriority(newPriority);
   }
 
   function generateTest() {
@@ -210,7 +216,7 @@ function StartComp({ data }) {
                   control={
                     <Checkbox
                       checked={inversedMode}
-                      onChange={handlePriorityChange}
+                      onChange={(event) => setInversedMode(event.target.checked)}
                     />
                   }
                   label="Převrátit otázky"
@@ -221,7 +227,7 @@ function StartComp({ data }) {
                   label="Opakovat otázky"
                   type="number"
                   value={qPriority}
-                  onChange={(event) => setQPriority(event.target.value)}
+                  onChange={handlePriorityChange}
                   InputProps={{
                     inputProps: {
                       min: 1,
