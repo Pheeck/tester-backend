@@ -228,12 +228,6 @@ function StartComp({ data }) {
                   type="number"
                   value={qPriority}
                   onChange={handlePriorityChange}
-                  InputProps={{
-                    inputProps: {
-                      min: 1,
-                      max: 9
-                    }}
-                  }
                 />
               </Grid>
               <Grid item xs={12}>

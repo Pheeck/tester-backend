@@ -16,4 +16,20 @@ pip install -r requirements.txt
 
 - Install Yarn
 - Use `yarn install` to install all js dependencies
-- Use `yarn dev` to build js files
+
+
+# Build necessary files
+
+- Use `yarn dev` to compile js
+- Use `python3 ./tester/manage.py migrate` to let django build the database
+
+
+# Run server
+
+- Use `python3 ./tester/manage.py runserver` to run the server on `localhost:8000`
+
+
+# Populate database
+
+- The frontend will currently crash when no questions are present in the database
+- To create new questions, go to `http://localhost:8000/api/questions`
