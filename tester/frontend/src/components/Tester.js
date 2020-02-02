@@ -159,6 +159,7 @@ function StartComp({ data }) {
 
   const [qPriority, setQPriority] = useState(2);
   const [inversedMode, setInversedMode] = useState(false);
+  const [randomMode, setRandomMode] = useState(false);
 
   const minPriority = 1;
   const maxPriority = 9;
@@ -181,6 +182,17 @@ function StartComp({ data }) {
   }
 
   function generateTest() {
+    function shuffle(array) {
+      // Uses Fisher-Yates shuffle
+      var j, foo;
+      for (var i = 0; i < array.length - 1; ++i) {
+        j = i + Math.floor(Math.random() * (array.length - i));
+        foo = array[i];
+        array[i] = array[j];
+        array[j] = foo;
+      }
+    }
+
     var result = [];
 
     data.forEach((question) => {
@@ -190,6 +202,10 @@ function StartComp({ data }) {
         priority: qPriority
       });
     });
+
+    if (randomMode) {
+      shuffle(result);
+    }
 
     setTest(result);
     setQRemaining(result.length * qPriority);
@@ -230,7 +246,18 @@ function StartComp({ data }) {
                   onChange={handlePriorityChange}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={7}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={randomMode}
+                      onChange={(event) => setRandomMode(event.target.checked)}
+                    />
+                  }
+                  label="Náhodné pořadí"
+                />
+              </Grid>
+              <Grid item xs={5}>
                 <Button
                   variant="contained"
                   color="primary"
