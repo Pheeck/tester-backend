@@ -11,3 +11,4 @@ package-lock.json
 todo.txt
 .vscode/
 tester/frontend/static/frontend/*
+log

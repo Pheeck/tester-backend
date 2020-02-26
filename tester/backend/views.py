@@ -1,11 +1,34 @@
 from django.shortcuts import render
 
-from rest_framework import generics
+from django.db.models import Count
 
-from backend.models import Question
-from backend.serializers import QuestionSerializer
+from rest_framework import generics, status
+from rest_framework.response import Response
+
+from backend.models import Question, Set
+from backend.serializers import QuestionSerializer, SetRetrieveSerializer, SetCreateSerializer
 
 
-class QuestionListCreate(generics.ListCreateAPIView):
+class QuestionList(generics.ListAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+
+class QuestionRetrieve(generics.RetrieveAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+class QuestionCreate(generics.CreateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+class SetList(generics.ListAPIView):
+    queryset = Set.objects.all().annotate(size=Count('questions'))
+    serializer_class = SetRetrieveSerializer
+
+class SetRetrieve(generics.RetrieveAPIView):
+    queryset = Set.objects.all().annotate(size=Count('questions'))
+    serializer_class = SetRetrieveSerializer
+
+class SetCreate(generics.CreateAPIView):
+    queryset = Set.objects.all()
+    serializer_class = SetCreateSerializer
