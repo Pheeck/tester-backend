@@ -13,8 +13,8 @@ class SetRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Set
-        fields = ('name', 'questions', 'size')
-        read_only_fields = ('questions', 'size')
+        fields = ('name', 'questions', 'size', 'uuid')
+        read_only_fields = ('questions', 'size', 'uuid')
     
     def get_size(self, obj):
         return obj.size
@@ -22,5 +22,5 @@ class SetRetrieveSerializer(serializers.ModelSerializer):
 class SetCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Set
-        fields = ('name', 'questions')
-        read_only_fields = ('questions',)
+        fields = ('name', 'questions', 'uuid')
+        read_only_fields = ('questions', 'uuid')

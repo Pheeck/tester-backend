@@ -273,14 +273,14 @@ function StartComp({ data }) {
   );
 }
 
-function Tester() {
+function Tester({ setId }) {
   const styles = useStyles();
 
   return (
     <>
       <Container maxWidth="xs">
         <Paper className={styles.root}>
-          <DataProvider endpoint="api/question/list/" render={data => <StartComp data={data} />} />
+          <DataProvider endpoint="/api/question/list/" render={data => <StartComp data={data} />} />
         </Paper>
       </Container>
     </>
