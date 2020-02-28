@@ -152,7 +152,7 @@ function TestingComp({ test, qRemaining, setQRemaining, setTestRunning }) {
   );
 }
 
-function StartComp({ data }) {
+function StartComp({ set, setName, setSize }) {
   const [test, setTest] = useState([]);
   const [testRunning, setTestRunning] = useState(false);
   const [qRemaining, setQRemaining] = useState(0);
@@ -195,7 +195,7 @@ function StartComp({ data }) {
 
     var result = [];
 
-    data.forEach((question) => {
+    set.forEach((question) => {
       result.push({
         question: inversedMode ? question.answer : question.question,
         answer: inversedMode ? question.question : question.answer,
@@ -227,6 +227,11 @@ function StartComp({ data }) {
               setTestRunning={setTestRunning}
             />
           : <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <Typography variant="body1">
+                  Sada otázek: {setName}
+                </Typography>
+              </Grid>
               <Grid item xs={7}>
                 <FormControlLabel
                   control={
@@ -280,7 +285,10 @@ function Tester({ setId }) {
     <>
       <Container maxWidth="xs">
         <Paper className={styles.root}>
-          <DataProvider endpoint="/api/question/list/" render={data => <StartComp data={data} />} />
+          <DataProvider
+            endpoint={"/api/set/retrieve-by-uuid/" + setId + "/"}
+            render={data => <StartComp set={data.questions} setName={data.name} setSize={data.size} />}
+          />
         </Paper>
       </Container>
     </>

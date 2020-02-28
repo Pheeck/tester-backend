@@ -32,4 +32,5 @@ pip install -r requirements.txt
 # Populate database
 
 - The frontend will currently crash when no questions are present in the database
-- To create new questions, go to `http://localhost:8000/api/questions`
+- To create new question sets, go to `http://localhost:8000/api/set/create/`
+- To create new questions, go to `http://localhost:8000/api/question/create/`

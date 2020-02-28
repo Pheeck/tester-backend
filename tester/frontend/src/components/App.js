@@ -29,7 +29,10 @@ function App() {
             <Child />
           </Route>
           <Route path="/">
-            <Link to="/ahoj/">Test</Link>
+            <p>
+              Vítej na landing pagi
+            </p>
+            <Link to="/f09a04b6-fcde-4ee6-917f-efc7cd7ab8fb/">f09a04b6-fcde-4ee6-917f-efc7cd7ab8fb</Link>
           </Route>
         </Switch>
       </BrowserRouter>
