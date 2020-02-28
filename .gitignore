@@ -12,3 +12,5 @@ todo.txt
 .vscode/
 tester/frontend/static/frontend/*
 log
+tester/backend/migrations/*
+tester/frontend/migrations/*
