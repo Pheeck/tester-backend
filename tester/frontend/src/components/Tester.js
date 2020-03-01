@@ -1,3 +1,7 @@
+// NOTICE: The word 'set' is used two ways in this file:
+// 1) As an identifier for state setting functions
+// 2) As a name for sets of questions and related variables
+
 import React, {useState} from "react";
 
 import {
@@ -49,7 +53,7 @@ function FinishComp({ setTestRunning }) {
   );
 }
 
-function TestingComp({ test, qRemaining, setQRemaining, setTestRunning }) {
+function TestingComp({ test, setName, qRemaining, setQRemaining, setTestRunning }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [qIndex, setQIndex] = useState(0);
@@ -97,6 +101,16 @@ function TestingComp({ test, qRemaining, setQRemaining, setTestRunning }) {
         testDone
         ? <FinishComp setTestRunning={setTestRunning} />
         : <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="body1">Sada otázek: {setName}</Typography>
+            </Grid>
+            {
+              test[qIndex].category !== ""
+              ? <Grid item xs={12}>
+                  <Typography variant="body1">Kategorie: {test[qIndex].category}</Typography>
+                </Grid>
+              : <></>
+            }
             <Grid item xs={6}>
               <Typography variant="body1">zbývá {qRemaining} otázek</Typography>
             </Grid>
@@ -199,6 +213,7 @@ function StartComp({ set, setName, setSize }) {
       result.push({
         question: inversedMode ? question.answer : question.question,
         answer: inversedMode ? question.question : question.answer,
+        category: question.category,
         priority: qPriority
       });
     });
@@ -208,7 +223,8 @@ function StartComp({ set, setName, setSize }) {
     }
 
     setTest(result);
-    setQRemaining(result.length * qPriority);
+    // setQRemaining(result.length * qPriority);
+    setQRemaining(setSize * qPriority);
   }
 
   function startTest() {
@@ -222,6 +238,7 @@ function StartComp({ set, setName, setSize }) {
         testRunning
           ? <TestingComp
               test={test}
+              setName={setName}
               qRemaining={qRemaining}
               setQRemaining={setQRemaining}
               setTestRunning={setTestRunning}

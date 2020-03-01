@@ -14,6 +14,9 @@ const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3, 2),
   },
+  editor: {
+    backgroundColor: "#fafafa",
+  },
 }));
 
 
@@ -24,7 +27,7 @@ function NewSet() {
 
   return (
     <>
-      <Container maxWidth="xs">
+      <Container maxWidth="md">
         <Paper className={styles.root}>
           <Typography variant="body1">
             Nová sada otázek
@@ -34,6 +37,13 @@ function NewSet() {
             onValueChange={(newText) => setEditorText(newText)}
             highlight={(newText) => newText}
             padding={10}
+            tabSize={1}
+            insertSpaces={false}
+            style={{
+              fontFamily: "monospace",
+              fontSize: 12,
+            }}
+            className={styles.editor}
           />
         </Paper>
       </Container>
