@@ -1,6 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
+
 import Tester from "./Tester";
+import NewSet from "./NewSet";
+import UploadSet from "./UploadSet";
+
+import {
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
 
 import {
   Switch,
@@ -11,6 +23,13 @@ import {
 } from "react-router-dom";
 
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    padding: theme.spacing(3, 2),
+  },
+}));
+
+
 function Child() {
   var { id } = useParams();
 
@@ -19,20 +38,96 @@ function Child() {
   );
 }
 
+function MainPage() {
+  var styles = useStyles();
+
+  return (
+    <>
+      <Container maxWidth="xs">
+        <Paper className={styles.root}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="body1">
+                Vítej na hlavní stránce
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Link to="/f09a04b6-fcde-4ee6-917f-efc7cd7ab8fb/">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                >
+                  f09a04b6-fcde-4ee6-917f-efc7cd7ab8fb
+                </Button>
+              </Link>
+            </Grid>
+            <Grid item xs={12}>
+              <Link to="/create/">
+              <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                >
+                  Nová sada
+                </Button>
+              </Link>
+            </Grid>
+            <Grid item xs={12}>
+              <Link to="/upload/">
+              <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                >
+                  Nahrát soubor
+                </Button>
+              </Link>
+            </Grid>
+          </Grid>
+        </Paper>
+      </Container>
+    </>
+  );
+}
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Switch>
+          <Route path="/create">
+            <Link to="/">
+              <Button
+                variant="contained"
+              >
+                Zpět na hlavní stránku
+              </Button>
+            </Link>
+            <NewSet />
+          </Route>
+          <Route path="/upload">
+            <Link to="/">
+              <Button
+                variant="contained"
+              >
+                Zpět na hlavní stránku
+              </Button>
+            </Link>
+            <UploadSet />
+          </Route>
           <Route path="/:id">
+            <Link to="/">
+              <Button
+                variant="contained"
+              >
+                Zpět na hlavní stránku
+              </Button>
+            </Link>
             <Child />
           </Route>
           <Route path="/">
-            <p>
-              Vítej na landing pagi
-            </p>
-            <Link to="/f09a04b6-fcde-4ee6-917f-efc7cd7ab8fb/">f09a04b6-fcde-4ee6-917f-efc7cd7ab8fb</Link>
+            <MainPage />
           </Route>
         </Switch>
       </BrowserRouter>
