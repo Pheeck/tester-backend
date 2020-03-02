@@ -104,13 +104,14 @@ function TestingComp({ test, setName, qRemaining, setQRemaining, setTestRunning 
             <Grid item xs={12}>
               <Typography variant="body1">Sada otázek: {setName}</Typography>
             </Grid>
-            {
-              test[qIndex].category !== ""
-              ? <Grid item xs={12}>
+            <Grid item xs={12}>
+              {
+                test[qIndex].category !== ""
+                ? 
                   <Typography variant="body1">Kategorie: {test[qIndex].category}</Typography>
-                </Grid>
-              : <></>
-            }
+                : <Typography variant="body1">- - - - -</Typography>
+              }
+            </Grid>
             <Grid item xs={6}>
               <Typography variant="body1">zbývá {qRemaining} otázek</Typography>
             </Grid>

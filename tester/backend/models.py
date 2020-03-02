@@ -17,5 +17,5 @@ class Set(models.Model):
 class Question(models.Model):
     question = models.CharField(max_length=100)
     answer = models.CharField(max_length=100)
-    category = models.CharField(max_length=100)
+    category = models.CharField(max_length=100, default='')
     set = models.ForeignKey(Set, related_name='questions', on_delete=models.CASCADE)

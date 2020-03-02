@@ -52,13 +52,13 @@ function MainPage() {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Link to="/8e038a42-7bd2-4ac1-966f-bacadbae8746/">
+              <Link to="/007bf0bc-ce10-46c4-93ca-86f969898ca0/">
                 <Button
                   variant="contained"
                   color="primary"
                   fullWidth
                 >
-                  8e038a42-7bd2-4ac1-966f-bacadbae8746
+                  007bf0bc-ce10-46c4-93ca-86f969898ca0
                 </Button>
               </Link>
             </Grid>
