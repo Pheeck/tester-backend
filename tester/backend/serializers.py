@@ -24,3 +24,7 @@ class SetCreateSerializer(serializers.ModelSerializer):
         model = Set
         fields = ('name', 'questions', 'uuid')
         read_only_fields = ('questions', 'uuid')
+
+class SetCreateFromTextSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    text = serializers.CharField(max_length=20000)
