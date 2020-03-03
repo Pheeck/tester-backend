@@ -29,6 +29,10 @@ class SetList(generics.ListAPIView):
     queryset = Set.objects.all().annotate(size=Count('questions'))
     serializer_class = SetRetrieveSerializer
 
+class SetDestroy(generics.DestroyAPIView):
+    queryset = Set.objects.all().annotate(size=Count('questions'))
+    serializer_class = SetRetrieveSerializer
+
 class SetRetrieve(generics.RetrieveAPIView):
     queryset = Set.objects.all().annotate(size=Count('questions'))
     serializer_class = SetRetrieveSerializer
@@ -51,7 +55,6 @@ class SetCreate(generics.CreateAPIView):
     serializer_class = SetCreateSerializer
 
 class SetCreateFromText(generics.GenericAPIView):
-    #queryset = Set.objects.all()
     serializer_class = SetCreateFromTextSerializer
 
     def _tab_parse(self, text, category_seq='#', comment_seq='//'):
@@ -65,10 +68,13 @@ class SetCreateFromText(generics.GenericAPIView):
         curr_answer = ''
         curr_category = ''
 
+        text = text.replace('\r', '')
         text = text.split('\n')
 
         for line in text:
             if line.startswith(comment_seq):  # The line is a comment
+                continue
+            elif line == '' or line == '\t':  # The line is empty
                 continue
             elif line.startswith('\t'):       # The line is an answer
                 line = line[1:]               # Get rid of the tab first
@@ -91,7 +97,7 @@ class SetCreateFromText(generics.GenericAPIView):
                 line = line[len(category_seq):]  # Get rid of the category sequence first
                 curr_category = line
             else:                             # The line is a question
-                # If there is a question, create a Question object
+                # If there is a question, create a question dict
                 if curr_question is not None:
                     # Create a new question dict and append it
                     result.append({
@@ -126,4 +132,4 @@ class SetCreateFromText(generics.GenericAPIView):
             question = Question(set=set, **question_dict)
             question.save()
         
-        return Response({'setUUID': set.uuid})
+        return Response({'UUID': set.uuid})
