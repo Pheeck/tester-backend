@@ -70,7 +70,13 @@ function NewSet() {
               created
                 ? <Grid item sm={12}>
                     <Typography variant="body1">
-                      Sada {UUID} vytvořena
+                      Sada '{setName}' vytvořena
+                    </Typography>
+                    <Typography variant="body1">
+                      Kód sady: {UUID}
+                    </Typography>
+                    <Typography>
+                      Kód si zapište. Pomocí něho budete k sadě přistupovat.
                     </Typography>
                   </Grid>
                 : <>

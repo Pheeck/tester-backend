@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import ReactDOM from "react-dom";
 
 import Tester from "./Tester";
@@ -10,6 +10,7 @@ import {
   Container,
   Grid,
   Paper,
+  TextField,
   Typography,
   makeStyles,
 } from "@material-ui/core";
@@ -38,29 +39,67 @@ function Child() {
   );
 }
 
+function Card(props) {
+  var styles = useStyles();
+
+  return (
+    <Grid item xs={12}>
+      <Paper className={styles.root}>
+        <Grid container spacing={3}>
+          {props.children}
+        </Grid>
+      </Paper>
+    </Grid>
+);
+}
+
 function MainPage() {
   var styles = useStyles();
+
+  const [setUUID, setSetUUID] = useState("");
 
   return (
     <>
       <Container maxWidth="xs">
-        <Paper className={styles.root}>
-          <Grid container spacing={3}>
+        <Grid container spacing={3}>
+          <Card>
             <Grid item xs={12}>
               <Typography variant="body1">
                 Vítej na hlavní stránce
               </Typography>
             </Grid>
+          </Card>
+          <Card>
             <Grid item xs={12}>
-              <Link to="/007bf0bc-ce10-46c4-93ca-86f969898ca0/">
+              <Typography variant="body1">
+                Mám kód sady otázek
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Zadej kód"
+                value={setUUID}
+                onChange={(event) => setSetUUID(event.target.value)}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Link to={() => "/" + setUUID + "/"}>
                 <Button
                   variant="contained"
                   color="primary"
                   fullWidth
                 >
-                  007bf0bc-ce10-46c4-93ca-86f969898ca0
+                  Načíst sadu
                 </Button>
               </Link>
+            </Grid>
+          </Card>
+          <Card>
+            <Grid item xs={12}>
+              <Typography variant="body1">
+                Chci vytvořit novou sadu otázek
+              </Typography>
             </Grid>
             <Grid item xs={12}>
               <Link to="/create/">
@@ -80,12 +119,12 @@ function MainPage() {
                   color="primary"
                   fullWidth
                 >
-                  Nahrát soubor
+                  Nahrát soubor (nefunkční)
                 </Button>
               </Link>
             </Grid>
-          </Grid>
-        </Paper>
+          </Card>
+        </Grid>
       </Container>
     </>
   );

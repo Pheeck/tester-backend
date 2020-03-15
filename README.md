@@ -27,10 +27,3 @@ pip install -r requirements.txt
 # Run server
 
 - Use `python3 ./tester/manage.py runserver` to run the server on `localhost:8000`
-
-
-# Populate database
-
-- The frontend will currently crash when no questions are present in the database
-- To create new question sets, go to `http://localhost:8000/api/set/create/`
-- To create new questions, go to `http://localhost:8000/api/question/create/`
