@@ -21,7 +21,7 @@ pip install -r requirements.txt
 # Build necessary files
 
 - Use `yarn dev` to compile js
-- Use `python3 ./tester/manage.py migrate` to let django build the database
+- Use `python3 ./tester/manage.py makemigrations && python3 ./tester/manage.py migrate` to let django build the database
 
 
 # Run server
