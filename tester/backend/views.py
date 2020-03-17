@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from backend.models import Question, Set
+from backend.models import *
 from backend.serializers import *
 
 
@@ -133,3 +133,29 @@ class SetCreateFromText(generics.GenericAPIView):
             question.save()
         
         return Response({'UUID': set.uuid})
+
+class ResultRetrieve(generics.RetrieveAPIView):
+    queryset = Result.objects.all()
+    serializer_class = ResultSerializer
+
+class ResultList(generics.ListAPIView):
+    queryset = Result.objects.all()
+    serializer_class = ResultSerializer
+
+class ResultCreate(generics.GenericAPIView):
+    serializer_class = ResultSerializer
+
+    def post(self, request):
+        answered = request.POST.get('answered')
+        successes = request.POST.get('successes')
+        uuid = request.POST.get('set')
+
+        set = Set.objects.get(uuid=uuid)
+        set.totalAnswered += int(answered)
+        set.totalSuccesses += int(successes)
+        set.save()
+
+        result = Result(answered=answered, successes=successes, set=set)
+        result.save()
+
+        return Response({'totalSuccesses': set.totalSuccesses, 'totalAnswered': set.totalAnswered})

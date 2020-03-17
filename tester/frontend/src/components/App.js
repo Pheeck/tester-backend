@@ -32,10 +32,10 @@ const useStyles = makeStyles(theme => ({
 
 
 function Child() {
-  var { id } = useParams();
+  var { UUID } = useParams();
 
   return (
-    <Tester setId={id}/>
+    <Tester UUID={UUID}/>
   );
 }
 
@@ -155,7 +155,7 @@ function App() {
             </Link>
             <UploadSet />
           </Route>
-          <Route path="/:id">
+          <Route path="/:UUID">
             <Link to="/">
               <Button
                 variant="contained"

@@ -12,4 +12,7 @@ urlpatterns = [
     path('set/retrieve-by-uuid/<slug:uuid>/', views.SetRetrieveByUUID.as_view()),
     path('set/create/', views.SetCreate.as_view()),
     path('set/create-from-text/', views.SetCreateFromText.as_view()),
+    path('result/list/', views.ResultList.as_view()),
+    path('result/retrieve/', views.ResultRetrieve.as_view()),
+    path('result/create/', views.ResultCreate.as_view()),
 ]

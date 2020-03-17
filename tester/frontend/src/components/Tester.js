@@ -29,13 +29,57 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-function FinishComp({ setTestRunning }) {
+function FinishComp({ setTestRunning, qAnswered, qSuccesses, totalSuccessRate }) {
   return (
     <>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Typography variant="body1">
             Test dokončen
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            Zodpovězeno:
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            Správně:
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            {qAnswered} otázek
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            {qSuccesses} otázek
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            Úspěšnost:
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            Globální úspěšnost:
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            {Math.round(qSuccesses / qAnswered * 100)}%
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            {
+              totalSuccessRate == 0
+              ? "Načítám..."
+              : totalSuccessRate + "%"
+            }
           </Typography>
         </Grid>
         <Grid item xs={12}>
@@ -53,11 +97,13 @@ function FinishComp({ setTestRunning }) {
   );
 }
 
-function TestingComp({ test, setName, qRemaining, setQRemaining, setTestRunning }) {
+function TestingComp({test, setName, UUID, qRemaining, setQRemaining, setTestRunning, qAnswered, setQAnswered, qSuccesses, setQSuccesses }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [qIndex, setQIndex] = useState(0);
   const [testDone, setTestDone] = useState(false);
+
+  const [totalSuccessRate, setTotalSuccessRate] = useState(0.0);
 
   function toggleExpanded() {
     setButtonsDisabled(!buttonsDisabled);
@@ -65,11 +111,17 @@ function TestingComp({ test, setName, qRemaining, setQRemaining, setTestRunning 
   }
 
   function nextQuestion(success) {
+    // Update 'answered' and 'successes'
+    setQAnswered(qAnswered + 1);
+    if (success) {
+      setQSuccesses(qSuccesses + 1);
+    }
+
     // Amend question priority
     if (success) {
       // Finish test if no questions remain
       if (qRemaining <= 1) {
-        setTestDone(true);
+        finishTest();
         return;
       }
       test[qIndex].priority -= 1;
@@ -95,11 +147,37 @@ function TestingComp({ test, setName, qRemaining, setQRemaining, setTestRunning 
     toggleExpanded();
   }
 
+  function finishTest() {
+    // Send results to backend
+    var formData = new FormData();
+    formData.append("answered", qAnswered);
+    formData.append("successes", qSuccesses);
+    formData.append("set", UUID);
+
+    fetch(
+      "/api/result/create/",
+      {
+        method: "POST",
+        body: formData
+      }
+    ).then((response) => response.json().then((data) => {
+      setTotalSuccessRate(Math.round(data["totalSuccesses"] / data["totalAnswered"] * 100));
+    }));
+
+    // Frontend
+    setTestDone(true);
+  }
+
   return (
     <>
       {
         testDone
-        ? <FinishComp setTestRunning={setTestRunning} />
+        ? <FinishComp
+            setTestRunning={setTestRunning}
+            qAnswered={qAnswered}
+            qSuccesses={qSuccesses}
+            totalSuccessRate={totalSuccessRate}
+          />
         : <Grid container spacing={3}>
             <Grid item xs={12}>
               <Typography variant="body1">Sada otázek: {setName}</Typography>
@@ -109,7 +187,7 @@ function TestingComp({ test, setName, qRemaining, setQRemaining, setTestRunning 
                 test[qIndex].category !== ""
                 ? 
                   <Typography variant="body1">Kategorie: {test[qIndex].category}</Typography>
-                : <Typography variant="body1">- - - - -</Typography>
+                : <Typography variant="body1">Bez kategorie</Typography>
               }
             </Grid>
             <Grid item xs={6}>
@@ -167,10 +245,13 @@ function TestingComp({ test, setName, qRemaining, setQRemaining, setTestRunning 
   );
 }
 
-function StartComp({ set, setName, setSize }) {
+function StartComp({ set, setName, UUID, setSize }) {
   const [test, setTest] = useState([]);
   const [testRunning, setTestRunning] = useState(false);
   const [qRemaining, setQRemaining] = useState(0);
+
+  const [qAnswered, setQAnswered] = useState(0);
+  const [qSuccesses, setQSuccesses] = useState(0);
 
   const [qPriority, setQPriority] = useState(2);
   const [inversedMode, setInversedMode] = useState(false);
@@ -230,6 +311,10 @@ function StartComp({ set, setName, setSize }) {
 
   function startTest() {
     generateTest();
+
+    setQAnswered(0);
+    setQSuccesses(0);
+
     setTestRunning(true);
   }
 
@@ -239,10 +324,19 @@ function StartComp({ set, setName, setSize }) {
         testRunning
           ? <TestingComp
               test={test}
+
               setName={setName}
+              UUID={UUID}
+
               qRemaining={qRemaining}
               setQRemaining={setQRemaining}
+
               setTestRunning={setTestRunning}
+
+              qAnswered={qAnswered}
+              setQAnswered={setQAnswered}
+              qSuccesses={qSuccesses}
+              setQSuccesses={setQSuccesses}
             />
           : <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -296,7 +390,7 @@ function StartComp({ set, setName, setSize }) {
   );
 }
 
-function Tester({ setId }) {
+function Tester({ UUID }) {
   const styles = useStyles();
 
   return (
@@ -304,8 +398,8 @@ function Tester({ setId }) {
       <Container maxWidth="xs">
         <Paper className={styles.root}>
           <DataProvider
-            endpoint={"/api/set/retrieve-by-uuid/" + setId + "/"}
-            render={data => <StartComp set={data.questions} setName={data.name} setSize={data.size} />}
+            endpoint={"/api/set/retrieve-by-uuid/" + UUID + "/"}
+            render={data => <StartComp set={data.questions} setName={data.name} UUID={UUID} setSize={data.size} />}
           />
         </Paper>
       </Container>
