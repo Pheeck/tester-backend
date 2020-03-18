@@ -121,7 +121,7 @@ function TestingComp({test, setName, UUID, qRemaining, setQRemaining, setTestRun
     if (success) {
       // Finish test if no questions remain
       if (qRemaining <= 1) {
-        finishTest();
+        finishTest(qAnswered + 1, success ? qSuccesses + 1 : qSuccesses);
         return;
       }
       test[qIndex].priority -= 1;
@@ -147,11 +147,11 @@ function TestingComp({test, setName, UUID, qRemaining, setQRemaining, setTestRun
     toggleExpanded();
   }
 
-  function finishTest() {
+  function finishTest(answ, succ) {  // Answered and succeses must be counted separately, because the component atributes may not be updated yet
     // Send results to backend
     var formData = new FormData();
-    formData.append("answered", qAnswered);
-    formData.append("successes", qSuccesses);
+    formData.append("answered", answ);
+    formData.append("successes", succ);
     formData.append("set", UUID);
 
     fetch(
