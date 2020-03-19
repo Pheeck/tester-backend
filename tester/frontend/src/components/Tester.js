@@ -2,7 +2,7 @@
 // 1) As an identifier for state setting functions
 // 2) As a name for sets of questions and related variables
 
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 
 import {
   Button,
@@ -20,6 +20,18 @@ import {
 } from "@material-ui/core";
 
 import DataProvider from "./DataProvider";
+
+
+function shuffle(array) {  // Utility function
+  // Uses Fisher-Yates shuffle
+  var j, foo;
+  for (var i = 0; i < array.length - 1; ++i) {
+    j = i + Math.floor(Math.random() * (array.length - i));
+    foo = array[i];
+    array[i] = array[j];
+    array[j] = foo;
+  }
+}
 
 
 const useStyles = makeStyles(theme => ({
@@ -245,7 +257,176 @@ function TestingComp({test, setName, UUID, qRemaining, setQRemaining, setTestRun
   );
 }
 
-function StartComp({ set, setName, UUID, setSize }) {
+function TestingChooseComp({test, setName, UUID, qRemaining, setQRemaining, setTestRunning, qAnswered, setQAnswered, qSuccesses, setQSuccesses }) {
+  const [answerRevealed, setAnswerRevealed] = useState(false);
+  const [hadSuccess, setHadSuccess] = useState(false);
+
+  const [answerButtons, setAnswerButtons] = useState([]);
+
+  const [qIndex, setQIndex] = useState(0);
+  const [testDone, setTestDone] = useState(false);
+
+  const [totalSuccessRate, setTotalSuccessRate] = useState(0.0);
+
+
+  //useEffect(() => {  TODO
+  //  shuffleAnswers();
+  //}, []);  // Will only trigger when component first renders
+
+  useEffect(() => {
+    generateButtons();
+  }, [answerRevealed]);  // Will only trigger on first render and when 'answerRevealed' state changes
+
+
+  function shuffleAnswers() {
+    shuffle(test[qIndex].answers);
+  }
+
+  function generateButtons() {
+    var result = [];
+
+    test[qIndex].answers.forEach((answer, index) => {
+      result.push(  // Each child in a list should have a unique "key" prop.
+        <Grid item xs={12} key={index}>
+          {
+            answerRevealed
+            ? <Button
+                variant="contained"
+                color={"primary"}
+                fullWidth
+                disabled={!answer.correct}
+                onClick={nextQuestion}
+              >
+                {answer.answer}
+              </Button>
+            : <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                disabled={answerRevealed}
+                onClick={() => {revealAnswer(answer.correct)}}
+              >
+                {answer.answer}
+              </Button>
+          }
+        </Grid>
+      )
+    });
+
+    setAnswerButtons(result);
+  }
+
+  function revealAnswer(success) {
+    // Update 'answered' and 'successes'
+    setQAnswered(qAnswered + 1);
+    if (success) {
+      setQSuccesses(qSuccesses + 1);
+    }
+
+    // Amend question priority
+    if (success) {
+      test[qIndex].priority -= 1;
+      setQRemaining(qRemaining - 1);
+    }
+    else {
+      test[qIndex].priority += 1;
+      setQRemaining(qRemaining + 1);
+    }
+
+    setHadSuccess(success);
+    setAnswerRevealed(true);
+  }
+
+  function nextQuestion() {
+    // Finish test if no questions remain
+    if (qRemaining <= 0) {
+      finishTest();
+      return;
+    }
+    
+    // Delete question if priority 0, set new question index
+    var newQIndex = qIndex;
+    if (test[qIndex].priority == 0) {
+      test.splice(qIndex, 1);
+    }
+    else {
+      newQIndex += 1;
+    }
+    newQIndex %= test.length;
+    setQIndex(newQIndex);
+
+    // Reset hadSuccess (just in case for debugging purposes)
+    setHadSuccess(false);
+
+    shuffleAnswers();
+
+    // Prepare GUI for new question
+    setAnswerRevealed(false);
+    generateButtons();
+  }
+
+  function finishTest() {
+    // Send results to backend
+    var formData = new FormData();
+    formData.append("answered", qAnswered);
+    formData.append("successes", qSuccesses);
+    formData.append("set", UUID);
+
+    fetch(
+      "/api/result/create/",
+      {
+        method: "POST",
+        body: formData
+      }
+    ).then((response) => response.json().then((data) => {
+      setTotalSuccessRate(Math.round(data["totalSuccesses"] / data["totalAnswered"] * 100));
+    }));
+
+    // Frontend
+    setTestDone(true);
+  }
+
+  return (
+    <>
+      {
+        testDone
+        ? <FinishComp
+            setTestRunning={setTestRunning}
+            qAnswered={qAnswered}
+            qSuccesses={qSuccesses}
+            totalSuccessRate={totalSuccessRate}
+          />
+        : <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="body1">Sada otázek: {setName}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              {
+                test[qIndex].category !== ""
+                ? 
+                  <Typography variant="body1">Kategorie: {test[qIndex].category}</Typography>
+                : <Typography variant="body1">Bez kategorie</Typography>
+              }
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body1">zbývá {qRemaining} otázek</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="body1">z toho tato otázka {test[qIndex].priority}x</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="body1">{test[qIndex].question}</Typography>
+            </Grid>
+            <>
+              {answerButtons}
+            </>
+          </Grid>
+      }
+    </>
+  );
+}
+
+function StartComp({ set, setName, setSize, UUID, isChooseSet }) {
   const [test, setTest] = useState([]);
   const [testRunning, setTestRunning] = useState(false);
   const [qRemaining, setQRemaining] = useState(0);
@@ -278,26 +459,27 @@ function StartComp({ set, setName, UUID, setSize }) {
   }
 
   function generateTest() {
-    function shuffle(array) {
-      // Uses Fisher-Yates shuffle
-      var j, foo;
-      for (var i = 0; i < array.length - 1; ++i) {
-        j = i + Math.floor(Math.random() * (array.length - i));
-        foo = array[i];
-        array[i] = array[j];
-        array[j] = foo;
-      }
-    }
-
     var result = [];
 
     set.forEach((question) => {
-      result.push({
-        question: inversedMode ? question.answer : question.question,
-        answer: inversedMode ? question.question : question.answer,
-        category: question.category,
-        priority: qPriority
-      });
+      if (isChooseSet) {  // Each type of set (standard, choose-from-multiple) requires different data
+        result.push({
+          question: question.question,
+          answers: question.answers,  // Answers are objects {string answer, bool correct}
+          category: question.category,
+          priority: qPriority
+        });
+      }
+      else {
+        var answer = question.answers[0].answer;  // Answer is a string
+
+        result.push({
+          question: inversedMode ? answer : question.question,
+          answer: inversedMode ? question.question : answer,
+          category: question.category,
+          priority: qPriority
+        });
+      }
     });
 
     if (randomMode) {
@@ -322,46 +504,49 @@ function StartComp({ set, setName, UUID, setSize }) {
     <>
       {
         testRunning
-          ? <TestingComp
-              test={test}
+          ? isChooseSet
+              ? <TestingChooseComp
+                  test={test}
 
-              setName={setName}
-              UUID={UUID}
+                  setName={setName}
+                  UUID={UUID}
 
-              qRemaining={qRemaining}
-              setQRemaining={setQRemaining}
+                  qRemaining={qRemaining}
+                  setQRemaining={setQRemaining}
 
-              setTestRunning={setTestRunning}
+                  setTestRunning={setTestRunning}
 
-              qAnswered={qAnswered}
-              setQAnswered={setQAnswered}
-              qSuccesses={qSuccesses}
-              setQSuccesses={setQSuccesses}
-            />
+                  qAnswered={qAnswered}
+                  setQAnswered={setQAnswered}
+                  qSuccesses={qSuccesses}
+                  setQSuccesses={setQSuccesses}
+                />
+              : <TestingComp
+                  test={test}
+
+                  setName={setName}
+                  UUID={UUID}
+
+                  qRemaining={qRemaining}
+                  setQRemaining={setQRemaining}
+
+                  setTestRunning={setTestRunning}
+
+                  qAnswered={qAnswered}
+                  setQAnswered={setQAnswered}
+                  qSuccesses={qSuccesses}
+                  setQSuccesses={setQSuccesses}
+                />
           : <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Typography variant="body1">
                   Sada otázek: {setName}
                 </Typography>
               </Grid>
-              <Grid item xs={7}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={inversedMode}
-                      onChange={(event) => setInversedMode(event.target.checked)}
-                    />
-                  }
-                  label="Převrátit otázky"
-                />
-              </Grid>
-              <Grid item xs={5}>
-                <TextField
-                  label="Opakovat otázky"
-                  type="number"
-                  value={qPriority}
-                  onChange={handlePriorityChange}
-                />
+              <Grid item xs={12}>
+                <Typography variant="body1">
+                  {isChooseSet ? "Vybírací sada" : "Standardní sada"}
+                </Typography>
               </Grid>
               <Grid item xs={7}>
                 <FormControlLabel
@@ -375,6 +560,29 @@ function StartComp({ set, setName, UUID, setSize }) {
                 />
               </Grid>
               <Grid item xs={5}>
+                <TextField
+                  label="Opakovat otázky"
+                  type="number"
+                  value={qPriority}
+                  onChange={handlePriorityChange}
+                />
+              </Grid>
+              {
+                isChooseSet
+                ? <></>
+                : <Grid item xs={7}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={inversedMode}
+                          onChange={(event) => setInversedMode(event.target.checked)}
+                        />
+                      }
+                      label="Převrátit otázky"
+                    />
+                  </Grid>
+              }
+              <Grid item xs={isChooseSet ? 12 : 5}>
                 <Button
                   variant="contained"
                   color="primary"
@@ -399,7 +607,7 @@ function Tester({ UUID }) {
         <Paper className={styles.root}>
           <DataProvider
             endpoint={"/api/set/retrieve-by-uuid/" + UUID + "/"}
-            render={data => <StartComp set={data.questions} setName={data.name} UUID={UUID} setSize={data.size} />}
+            render={data => <StartComp set={data.questions} setName={data.name} setSize={data.size} isChooseSet={data.choose} UUID={UUID} />}
           />
         </Paper>
       </Container>

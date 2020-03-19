@@ -13,13 +13,25 @@ import {
 } from "@material-ui/core";
 
 
-const defaultSetName = "Nepojmenovaná sada";
+const defaultSetName = "Nepojmenovaná vybírací sada";
 const defaultText = `//#Biologie
 //Co je hlavní funkcí mitochondrie?
-//	Je silovým domem cely
+//	Dodává buňce energii
+//	Chrání buňku před vnějším prostředím
+//	Fotosyntetizuje
+//	Je logickým centrem buňky
 //#
-//Kdo napsal Linux?
-//	I would like to interject for a moment...
+//Kdo napsal Linux kernel?
+//	Linus Torvalds
+//	Ken Thompson
+//	Richard Stallman
+//	Dennis Ritchie
+//	Andrew S. Tanenbaum
+//# Matematika
+//Kolik je 2 + 2?
+//	4
+//	13
+//	5
 `;
 
 
@@ -33,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-function NewSet() {
+function NewChooseSet() {
   const styles = useStyles();
   
   const [setName, setSetName] = useState(defaultSetName);
@@ -46,6 +58,7 @@ function NewSet() {
   function createSet() {
     var formData = new FormData();
     formData.append("name", setName);
+    formData.append("choose", true);
     formData.append("text", editorText);
 
     fetch(
@@ -70,7 +83,7 @@ function NewSet() {
               created
                 ? <Grid item sm={12}>
                     <Typography variant="body1">
-                      Sada '{setName}' vytvořena
+                      Vybírací sada '{setName}' vytvořena
                     </Typography>
                     <Typography variant="body1">
                       Kód sady: {UUID}
@@ -82,12 +95,19 @@ function NewSet() {
                 : <>
                     <Grid item sm={4}>
                       <Typography variant="body1">
-                        Nová sada otázek
+                        Nová vybírací sada otázek
                       </Typography>
                     </Grid>
                     <Grid item sm={8}>
                       <Typography variant="body1">
                         Odpovědi pište na řádky pod otázky a uveďte je tabulátorem
+                      </Typography>
+                    </Grid>
+                    <Grid item sm={4}>
+                    </Grid>
+                    <Grid item sm={8}>
+                      <Typography variant="body1">
+                        Odpověď na prvním řádku pod otázkou bude považována za správnou
                       </Typography>
                     </Grid>
                     <Grid item sm={4}>
@@ -154,4 +174,4 @@ function NewSet() {
   );
 }
 
-export default NewSet;
+export default NewChooseSet;

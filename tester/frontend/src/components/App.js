@@ -2,8 +2,8 @@ import React, {useState} from "react";
 import ReactDOM from "react-dom";
 
 import Tester from "./Tester";
-import NewSet from "./NewSet";
-import UploadSet from "./UploadSet";
+import NewStandardSet from "./NewStandardSet";
+import NewChooseSet from "./NewChooseSet";
 
 import {
   Button,
@@ -102,24 +102,24 @@ function MainPage() {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Link to="/create/">
+              <Link to="/create-standard">
               <Button
                   variant="contained"
                   color="primary"
                   fullWidth
                 >
-                  Nová sada
+                  Nová standardní sada
                 </Button>
               </Link>
             </Grid>
             <Grid item xs={12}>
-              <Link to="/upload/">
+              <Link to="/create-choose">
               <Button
                   variant="contained"
                   color="primary"
                   fullWidth
                 >
-                  Nahrát soubor (nefunkční)
+                  Nová vybírací sada
                 </Button>
               </Link>
             </Grid>
@@ -135,7 +135,7 @@ function App() {
     <>
       <BrowserRouter>
         <Switch>
-          <Route path="/create">
+          <Route path="/create-standard">
             <Link to="/">
               <Button
                 variant="contained"
@@ -143,9 +143,9 @@ function App() {
                 Zpět na hlavní stránku
               </Button>
             </Link>
-            <NewSet />
+            <NewStandardSet />
           </Route>
-          <Route path="/upload">
+          <Route path="/create-choose">
             <Link to="/">
               <Button
                 variant="contained"
@@ -153,7 +153,7 @@ function App() {
                 Zpět na hlavní stránku
               </Button>
             </Link>
-            <UploadSet />
+            <NewChooseSet />
           </Route>
           <Route path="/:UUID">
             <Link to="/">
