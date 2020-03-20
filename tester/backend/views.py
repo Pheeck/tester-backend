@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django.http import Http404
+from django.http import HttpResponseBadRequest, HttpResponseNotFound
 
 from django.db.models import Count
 
@@ -58,7 +58,7 @@ class SetRetrieveByUUID(generics.GenericAPIView):
         try:
             questionSet = self.queryset.get(**lookup)
         except ObjectDoesNotExist:
-            raise Http404('Invalid UUID')
+            raise HttpResponseNotFound('Invalid UUID')
         serializer = SetRetrieveSerializer(questionSet, context={'request': request})
         return Response(serializer.data)
 
@@ -139,6 +139,9 @@ class SetCreateFromText(generics.GenericAPIView):
         choose = True if choose.lower() == "true" else False
 
         question_dicts = self._parse(text)
+
+        if question_dicts[0]["question"] is None:
+            return HttpResponseBadRequest('The set doesn\'t have any questions')
 
         set_model = Set(name=name, choose=choose)
         set_model.save()

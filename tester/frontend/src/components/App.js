@@ -57,6 +57,13 @@ function MainPage() {
   var styles = useStyles();
 
   const [setUUID, setSetUUID] = useState("");
+  const [UUIDError, setUUIDError] = useState(false);
+
+  const UUIDRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+  function checkUUID() {
+    return UUIDRegex.test(setUUID);
+  }
 
   return (
     <>
@@ -65,7 +72,7 @@ function MainPage() {
           <Card>
             <Grid item xs={12}>
               <Typography variant="body1">
-                Vítej na hlavní stránce
+                Vítej na hlavní stránce Testeru
               </Typography>
             </Grid>
           </Card>
@@ -76,19 +83,36 @@ function MainPage() {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                label="Zadej kód"
-                value={setUUID}
-                onChange={(event) => setSetUUID(event.target.value)}
-                fullWidth
-              />
+              {
+                UUIDError
+                  ? <TextField
+                      label="Zadej kód"
+                      value={setUUID}
+                      onChange={(event) => setSetUUID(event.target.value)}
+                      fullWidth
+
+                      error
+                      helperText="Toto není validní kód"
+                    />
+                  : <TextField
+                      label="Zadej kód"
+                      value={setUUID}
+                      onChange={(event) => setSetUUID(event.target.value)}
+                      fullWidth
+                    />
+              }
             </Grid>
             <Grid item xs={12}>
-              <Link to={() => "/" + setUUID + "/"}>
+              <Link to={() => checkUUID() ? "/" + setUUID + "/" : ""}>
                 <Button
                   variant="contained"
                   color="primary"
                   fullWidth
+                  onClick={() => {
+                    if (!checkUUID()) {
+                      setUUIDError(true);
+                    }
+                  }}
                 >
                   Načíst sadu
                 </Button>

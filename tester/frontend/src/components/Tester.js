@@ -11,11 +11,14 @@ import {
   ExpansionPanel,
   ExpansionPanelSummary,
   ExpansionPanelDetails,
+  FormControl,
   FormControlLabel,
   Grid,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Typography,
-  TextField,
   makeStyles,
 } from "@material-ui/core";
 
@@ -259,8 +262,6 @@ function TestingComp({test, setName, UUID, qRemaining, setQRemaining, setTestRun
 
 function TestingChooseComp({test, setName, UUID, qRemaining, setQRemaining, setTestRunning, qAnswered, setQAnswered, qSuccesses, setQSuccesses }) {
   const [answerRevealed, setAnswerRevealed] = useState(false);
-  const [hadSuccess, setHadSuccess] = useState(false);
-
   const [answerButtons, setAnswerButtons] = useState([]);
 
   const [qIndex, setQIndex] = useState(0);
@@ -333,7 +334,6 @@ function TestingChooseComp({test, setName, UUID, qRemaining, setQRemaining, setT
       setQRemaining(qRemaining + 1);
     }
 
-    setHadSuccess(success);
     setAnswerRevealed(true);
   }
 
@@ -354,9 +354,6 @@ function TestingChooseComp({test, setName, UUID, qRemaining, setQRemaining, setT
     }
     newQIndex %= test.length;
     setQIndex(newQIndex);
-
-    // Reset hadSuccess (just in case for debugging purposes)
-    setHadSuccess(false);
 
     shuffleAnswers();
 
@@ -463,6 +460,7 @@ function StartComp({ set, setName, setSize, UUID, isChooseSet }) {
 
     set.forEach((question) => {
       if (isChooseSet) {  // Each type of set (standard, choose-from-multiple) requires different data
+        shuffle(question.answers);  // First, shuffle the answers
         result.push({
           question: question.question,
           answers: question.answers,  // Answers are objects {string answer, bool correct}
@@ -560,12 +558,24 @@ function StartComp({ set, setName, setSize, UUID, isChooseSet }) {
                 />
               </Grid>
               <Grid item xs={5}>
-                <TextField
-                  label="Opakovat otázky"
-                  type="number"
-                  value={qPriority}
-                  onChange={handlePriorityChange}
-                />
+                <FormControl fullWidth>
+                  <InputLabel id="priority-label">Opakovat otázky</InputLabel>
+                  <Select
+                    labelId="priority-label"
+                    value={qPriority}
+                    onChange={handlePriorityChange}
+                  >
+                    <MenuItem value={1}>1</MenuItem>
+                    <MenuItem value={2}>2</MenuItem>
+                    <MenuItem value={3}>3</MenuItem>
+                    <MenuItem value={4}>4</MenuItem>
+                    <MenuItem value={5}>5</MenuItem>
+                    <MenuItem value={6}>6</MenuItem>
+                    <MenuItem value={7}>7</MenuItem>
+                    <MenuItem value={8}>8</MenuItem>
+                    <MenuItem value={9}>9</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
               {
                 isChooseSet
@@ -598,6 +608,21 @@ function StartComp({ set, setName, setSize, UUID, isChooseSet }) {
   );
 }
 
+
+function ErrorComp({ UUID }) {
+  return (
+    <>
+      <Typography variant="body1">
+        Nastala chyba při načítání sady {UUID}
+      </Typography>
+      <Typography variant="body1">
+        Máte správný kód?
+      </Typography>
+    </>
+  );
+}
+
+
 function Tester({ UUID }) {
   const styles = useStyles();
 
@@ -607,7 +632,14 @@ function Tester({ UUID }) {
         <Paper className={styles.root}>
           <DataProvider
             endpoint={"/api/set/retrieve-by-uuid/" + UUID + "/"}
-            render={data => <StartComp set={data.questions} setName={data.name} setSize={data.size} isChooseSet={data.choose} UUID={UUID} />}
+            render={data => {
+              if (data === undefined) {
+                return <ErrorComp UUID={UUID}/>;
+              }
+              else {
+                return <StartComp set={data.questions} setName={data.name} setSize={data.size} isChooseSet={data.choose} UUID={UUID}/>;
+              }
+            }}
           />
         </Paper>
       </Container>

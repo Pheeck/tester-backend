@@ -5,6 +5,8 @@ import Editor from "react-simple-code-editor";
 import {
   Button,
   Container,
+  Dialog,
+  DialogTitle,
   Grid,
   Paper,
   TextField,
@@ -16,11 +18,11 @@ import {
 const defaultSetName = "Nepojmenovaná standardní sada";
 const defaultText = `//#Biologie
 //Co je hlavní funkcí mitochondrie?
-//	Je silovým domem cely
+//	Zásobuje buňku energií
 //#
-//Kdo napsal Linux?
-//	I would like to
-//	interject for a moment...
+//Kdo napsal Linux kernel?
+//	Linus
+//	Torvalds
 `;
 
 
@@ -36,6 +38,9 @@ const useStyles = makeStyles(theme => ({
 
 function NewStandardSet() {
   const styles = useStyles();
+
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorText, setErrorText] = useState("");
   
   const [setName, setSetName] = useState(defaultSetName);
   const [editorText, setEditorText] = useState(defaultText);
@@ -56,15 +61,34 @@ function NewStandardSet() {
         method: "POST",
         body: formData
       }
-    ).then((response) => response.json().then((data) => {
-      setUUID(data["UUID"]);
-      setCreated(true);
-    }));
-  } 
+    ).then((response) => {
+      if (response.status !== 200) {
+        response.text().then((text) => {
+          setErrorText(text);
+          setErrorOpen(true);
+        });
+      }
+      else {
+        response.json().then((data) => {
+          setUUID(data["UUID"]);
+          setCreated(true);
+        });
+      }
+    });
+  }
 
 
   return (
     <>
+      <Dialog
+        open={errorOpen}
+        onClose={() => setErrorOpen(false)}
+      >
+        <DialogTitle>Chyba</DialogTitle>
+        <Typography variant="body1">
+          {errorText}
+        </Typography>
+      </Dialog>
       <Container maxWidth="md">
         <Paper className={styles.root}>
           <Grid container spacing={3}>
