@@ -5,6 +5,8 @@ import Editor from "react-simple-code-editor";
 import {
   Button,
   Container,
+  Dialog,
+  DialogTitle,
   Grid,
   Paper,
   TextField,
@@ -67,15 +69,34 @@ function NewChooseSet() {
         method: "POST",
         body: formData
       }
-    ).then((response) => response.json().then((data) => {
-      setUUID(data["UUID"]);
-      setCreated(true);
-    }));
-  } 
+    ).then((response) => {
+      if (response.status !== 200) {
+        response.text().then((text) => {
+          setErrorText(text);
+          setErrorOpen(true);
+        });
+      }
+      else {
+        response.json().then((data) => {
+          setUUID(data["UUID"]);
+          setCreated(true);
+        });
+      }
+    });
+  }
 
 
   return (
     <>
+      <Dialog
+        open={errorOpen}
+        onClose={() => setErrorOpen(false)}
+      >
+        <DialogTitle>Chyba</DialogTitle>
+        <Typography variant="body1">
+          {errorText}
+        </Typography>
+      </Dialog>
       <Container maxWidth="md">
         <Paper className={styles.root}>
           <Grid container spacing={3}>
