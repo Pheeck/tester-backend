@@ -4043,13 +4043,6 @@ watchpack@^1.6.0:
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
 
-weak-key@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/weak-key/-/weak-key-1.0.1.tgz#a8f8faa4ba211ceb1e34dbd198da942245213f2b"
-  integrity sha512-HgISuSXCBGIDQf4Hzm7wkVoW6BPLzi1sJPoiiDSxERsbA0Ut8TJVDMbho+Q3RVGyCmW0MHKdcCnNVcPh0iJ0gA==
-  dependencies:
-    core-js "^2.4.0"
-
 webpack-cli@^3.3.10:
   version "3.3.10"
   resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.3.10.tgz#17b279267e9b4fb549023fae170da8e6e766da13"

@@ -1,17 +1,11 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 
 class DataProvider extends Component {
-  static propTypes = {
-    endpoint: PropTypes.string.isRequired,
-    render: PropTypes.func.isRequired
-  };
-
   state = {
       data: [],
       loaded: false,
       placeholder: "Načítám data..."
-    };
+  };
 
   componentDidMount() {
     fetch(this.props.endpoint)
