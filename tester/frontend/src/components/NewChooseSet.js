@@ -49,13 +49,15 @@ const useStyles = makeStyles(theme => ({
 
 function NewChooseSet() {
   const styles = useStyles();
+
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorText, setErrorText] = useState("");
   
   const [setName, setSetName] = useState(defaultSetName);
   const [editorText, setEditorText] = useState(defaultText);
 
   const [created, setCreated] = useState(false);
   const [UUID, setUUID] = useState("");
-
 
   function createSet() {
     var formData = new FormData();
